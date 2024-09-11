@@ -1,0 +1,1324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rest-connector xmlns="http://www.softwareag.com/cloudstreams/metadata/handler/model" id="com.softwareag.cloudstreams.salesforce.rest_v60" version="60" group="Salesforce.com" name="Salesforce® CRM REST" displayName="Salesforce® CRM REST">
+   <description>Salesforce REST API v60</description>
+   <connections>
+      <connection type="sagcloud" name="Salesforce_rest_connection" displayName="OAuth V2.0 (Authorization Code Flow)">
+         <interoperability>
+            <refs>
+               <ref type="connection" values="*"/>
+            </refs>
+         </interoperability>
+         <groups>
+            <group type="connection" name="connection" displayName="Connection">
+               <description>Define the required connection configurations to initiate communication with the SaaS provider.</description>
+               <fields>
+                  <field defaultValue="https://&lt;instance&gt;.salesforce.com" name="cn.providerUrl" displayName="Server URL" />
+                  <field defaultValue="300000" name="cn.keepAliveInterval" displayName="Keep Alive Interval" isOverride="true"/>
+                  <field defaultValue="4" name="cn.retryCount" displayName="Connection Retry Count"/>
+                  <field defaultValue="true" name="cn.retryIfRequestSentOk" displayName="Retry on Response Failure"/>
+               </fields>
+            </group>
+            <group type="oauth_v20_authorization_code" name="oauth_v20_authorization_code" displayName="OAuth V2.0 (Web Server Authentication Flow)">
+               <description>Define configurations needed for the OAuth version 2.0 authentication scheme.</description>
+               <fields>
+
+                  <field name="oauth_v20.scope" displayName="Scope" defaultValue="offline_access api refresh_token" modelType="Meta" />
+                  <field name="oauth_v20.authorizationServerUrl" displayName="Authorization Server URL" isHidden="true" defaultValue="https://login.salesforce.com/services/oauth2/authorize" modelType="Meta" />
+                  <field name="oauth_v20.authenticationServerUrl" displayName="Authentication Server URL" isHidden="true" defaultValue="https://login.salesforce.com/services/oauth2/token" modelType="Meta" />
+                  <field name="oauth_v20.accessTokenRefreshURL" displayName="Refresh URL" defaultValue="https://login.salesforce.com/services/oauth2/token" isRequired="true" isOverride="true" />
+                  <field name="oauth_v20.refreshAccessToken" displayName="Refresh Access Token" defaultValue="true" isRequired="true" isOverride="true"/>
+                  <field name="oauth_v20.refreshToken" displayName="Refresh Token" isRequired="true" isOverride="true"/>
+                  <field defaultValue="URL Query String" name="oauth_v20.accessTokenRefreshURLRequest" displayName="Refresh URL Request" isOverride="true"/>
+                  <field name="cx.grant_type"  defaultValue="refresh_token"  displayName="Grant Type" isRequired="false" isHidden="false"/>
+
+               </fields>
+            </group>
+            <group type="connectionManager" displayName="Connection Manager" name="connectionManager">
+               <fields>
+                  <field defaultValue="true" name="poolable"/>
+                  <field defaultValue="1" name="minimumPoolSize"/>
+                  <field defaultValue="10" name="maximumPoolSize"/>
+                  <field defaultValue="1" name="poolIncrementSize"/>
+                  <field defaultValue="1000" name="blockTimeout"/>
+                  <field defaultValue="1000" name="expireTimeout"/>
+                  <field defaultValue="0" name="startupRetryCount"/>
+                  <field defaultValue="10" name="startupBackoffSecs"/>
+                  <field defaultValue="auto" name="timeoutType"/>
+                  <field defaultValue="0" name="sessionExpiry"/>
+               </fields>
+            </group>
+         </groups>
+         <start />
+         <stop />
+      </connection>
+      <connection type="sagcloud_oauth_v20_jwt" name="sagcloud_oauth_v20_jwt" displayName="OAuth V2.0 (JWT Flow)">
+         <description>Connection using OAuth 2.0 JWT Bearer Token Flow</description>
+         <interoperability>
+            <refs>
+               <ref type="connection" values="*"/>
+            </refs>
+         </interoperability>
+         <groups>
+            <group type="connection" name="jwt_token" displayName="Connection">
+               <fields>
+                  <field defaultValue="https://&lt;instance&gt;.salesforce.com" name="cn.providerUrl" displayName="Server URL" />
+                  <field defaultValue="300000" name="cn.keepAliveInterval" displayName="Keep Alive Interval" isOverride="true"/>
+                  <field defaultValue="180000" name="cn.connectTimeout" displayName="Connection TimeOut" />
+                  <field defaultValue="180000" name="cn.readTimeout" displayName="Socket Read Timeout" />
+                  <field defaultValue="8192" name="cn.sockBuffSize" displayName="Socket Buffer Size" />
+               </fields>
+            </group>
+            <group type="oauth_v20_jwt" name="oauth_v20_jwt" displayName="OAuth V2.0 (JWT Token Flow)">
+               <description>Define configurations needed for the OAuth 2.0 JWT Bearer Token authentication scheme.</description>
+               <fields>
+                  <field name="jwt.authenticationServerUrl" displayName="Authentication Server URL" isHidden="true" defaultValue="https://login.salesforce.com/services/oauth2/token" modelType="Meta" />
+                  <field name="jwt.claim.aud" displayName="Audience" defaultValue="https://login.salesforce.com" isHidden="true" modelType="Meta" />
+                  <field name="jwt.claim.exp" displayName="Expiration Time (mins)" defaultValue="60" modelType="Meta" />
+                  <field name="jwt.header.alg" displayName="Signing with" defaultValue="RS256" isHidden="true" allowedValues="RS256,RS356" modelType="Meta" />
+                  <field defaultValue="4" name="cn.retryCount" displayName="Connection Retry Count"/>
+                  <field defaultValue="true" name="cn.retryIfRequestSentOk" displayName="Retry on Response Failure"/>
+               </fields>
+            </group>
+            <group type="connectionManager" displayName="Connection Manager" name="connectionManager">
+               <fields>
+                  <field defaultValue="true" name="poolable"/>
+                  <field defaultValue="1" name="minimumPoolSize"/>
+                  <field defaultValue="10" name="maximumPoolSize"/>
+                  <field defaultValue="1" name="poolIncrementSize"/>
+                  <field defaultValue="1000" name="blockTimeout"/>
+                  <field defaultValue="1000" name="expireTimeout"/>
+                  <field defaultValue="0" name="startupRetryCount"/>
+                  <field defaultValue="10" name="startupBackoffSecs"/>
+                  <field defaultValue="auto" name="timeoutType"/>
+                  <field defaultValue="0" name="sessionExpiry"/>
+               </fields>
+            </group>
+         </groups>
+         <start />
+         <stop />
+      </connection>
+   </connections>
+   <services>
+      <service xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="RESTServiceType" endpoint="${cn.providerUrl}" name="SalesforceRestService" displayName="SalesforceRestService">
+         <documentModel packageName="WmSalesforceRESTProvider" nsName="wmsalesforce.rest_v60.doctypes" useInlineModel="false">
+            <abstractObject type="businessObject" name="record">
+               <lookup ref="wmsalesforce.rest_v60.lookup:businessObjectList" type="boList" />
+               <lookup ref="wmsalesforce.rest_v60.lookup:businessObjectDescribe" type="boDescribe" />
+            </abstractObject>
+            <abstractObject type="businessObject" name="getRecord">
+               <lookup ref="wmsalesforce.rest_v60.lookup:businessObjectList" type="boList" />
+               <lookup ref="wmsalesforce.rest_v60.lookup:businessObjectDescribe" type="boDescribe" />
+            </abstractObject>
+            <abstractObject type="dynamicObject" name="dObject" >
+               <lookup ref="wmsalesforce.rest_v60.lookup:dboList" type="dboList"/>
+               <lookup ref="wmsalesforce.rest_v60.lookup:dboDescribe" type="dboDescribe"/>
+               <lookup ref="wmsalesforce.rest_v60.lookup:dboInteractions" type="dboInteractions"/>
+            </abstractObject>
+            <abstractObject type="dynamicObject" name="dObject_1" >
+               <lookup ref="wmsalesforce.rest_v60.lookup:dboListBatch" type="dboList"/>
+               <lookup ref="wmsalesforce.rest_v60.lookup:dboDescribeBatch" type="dboDescribe"/>
+               <lookup ref="wmsalesforce.rest_v60.lookup:dboInteractionsBatch" type="dboInteractions"/>
+            </abstractObject>
+            <abstractObject type="businessObject" name="compositeGraphRecord">
+               <lookup ref="wmsalesforce.rest_v60.lookup:compositeGraphBoList" type="boList"/>
+               <lookup ref="wmsalesforce.rest_v60.lookup:compositeGraphBoDescribe" type="boDescribe"/>
+            </abstractObject>
+         </documentModel>
+         <resources>
+            <mappings>
+               <map isRequired="true" isFixed="true" context="IN" name="ContentType" displayName="Content_Type">
+                  <source type="LITERAL">application/json</source>
+                  <target type="HEADER">Content-Type</target>
+               </map>
+               <map isRequired="true" isFixed="true" context="IN" name="Accept" displayName="Accept">
+                  <source type="LITERAL">application/json</source>
+                  <target type="HEADER">Accept</target>
+               </map>
+            </mappings>
+
+            <!-- Get a List of Objects -->
+            <resource method="GET" path="/services/data/v60.0/sobjects" name="getListOfObjects" displayName="Get a List of Objects" isHidden="false">
+               <description>Returns a list of objects</description>
+               <responses>
+                  <response name="getListOfObjectsResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:getListOfObjectsResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- List Available REST Resources  -->
+            <resource method="GET" path="/services/data/v60.0/" name="listAvailableRESTResources" displayName="List Available API Resources" isHidden="false" type="SIMPLE">
+               <description>Lists available REST API resources </description>
+               <responses>
+                  <response name="listAPIResourcesResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:listAPIResourcesResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+
+            <!-- List Available API Resources -->
+            <resource method="GET" path="/services/data/" name="listAvailableRESTAPIVersions" displayName="List Available API Versions" isHidden="false" type="SIMPLE">
+               <description>Lists available REST API vVersions</description>
+               <responses>
+                  <response name="listAPIVersionsResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:listAPIVersionsResponse" excludeRoot="true" dimension="1"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+
+            <!-- List Organization Limits -->
+            <resource method="GET" path="/services/data/v60.0/limits/" name="getListofOrganizationLimits" displayName="List Organization Limits" isHidden="false" type="SIMPLE">
+               <description>Lists the organization limits</description>
+               <responses>
+                  <response name="listOrganizationLimitsResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:listOrganizationLimitsResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- List Recently Viewed Records -->
+            <resource method="GET" path="/services/data/v60.0/recent/" name="viewRecentlyViewedRecords" displayName="List Recently Viewed Records" isHidden="false" type="SIMPLE">
+               <description>Lists recently viewed records</description>
+               <parameters>
+                  <parameter name="limit" style="QUERYSTRING_PARAM">
+                     <description>The number of records to be viewed</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="listRecentlyViewedRecordsResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:listRecentlyViewedRecordsResponse" excludeRoot="true" dimension="1"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- View Relevant Records -->
+            <resource method="GET" path="/services/data/v60.0/sobjects/relevantItems" name="viewRelevantItems" displayName="View Relevant Records" isHidden="false" type="SIMPLE">
+               <description>View the Relevant Items</description>
+               <responses>
+                  <response name="viewRelevantRecordsResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:viewRelevantRecordsResponse" excludeRoot="true" dimension="1"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- Get the Default Search Scope and Order  -->
+            <resource method="GET" path="/services/data/v60.0/search/scopeOrder" name="getDefaultSearchScopeAndOrder" displayName="Get the Default Search Scope and Order" isHidden="false" type="SIMPLE">
+               <description>Get the Default Search Scope and Order</description>
+               <responses>
+                  <response name="getDefaultSearchScopeAndOrderResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:defaultSearchScopeAndOrderResponse" excludeRoot="true" dimension="1"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- Get Search Result Layouts for Objects -->
+            <resource method="GET" path="/services/data/v60.0/search/layout/" name="getSearchResultLayoutsForObjects" displayName="Get Search Result Layouts" isHidden="false" type="SIMPLE">
+               <description>Get Search Result Layouts for Objects</description>
+               <parameters>
+                  <parameter name="q" isRequired="true" style="QUERYSTRING_PARAM">
+                     <description>Comma delimited object list</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="getSearchResultLayoutsResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:getSearchResultLayoutsResponse" excludeRoot="true" dimension="1"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- Get an Image from Rich Text Area Field -->
+            <resource method="GET" path="/services/data/v60.0/sobjects/{sObjectName}/{id}/richTextImageFields/{richTextImageFieldName}/{contentReferenceId}" name="getAnImageFromARichTextAreaField" displayName="Get an Image from Rich Text Area Field" type="SIMPLE">
+               <description>Get an Image from a Rich Text Area Field</description>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="false" style="URI_CONTEXT">
+                     <description>Specifies the object name</description>
+                  </parameter>
+                  <parameter name="id" isRequired="true" style="URI_CONTEXT">
+                     <description>Specifies the object id</description>
+                  </parameter>
+                  <parameter name="richTextImageFieldName" isRequired="true" isFixed="false" style="URI_CONTEXT">
+                     <description>Specifies the rich text area field name</description>
+                  </parameter>
+                  <parameter name="contentReferenceId" isRequired="true" isFixed="false" style="URI_CONTEXT">
+                     <description>The reference ID that uniquely identifies an image within a rich text area field.</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response code="200-599" name="stream" builderType="vnd.sag.cloudstreams+binary" messageFormatterType="vnd.sag.cloudstreams+binary"/>
+               </responses>
+            </resource>
+
+            <!-- Get Attachment Content from a Record -->
+            <resource method="GET" path="/services/data/v60.0/sobjects/{sObjectName}/{id}/body" name="getAttachmentContentFromARecord" displayName="Get Attachment Content from a Record" type="SIMPLE">
+               <description>Get attachment content from a record</description>
+               <mappings>
+                  <map isRequired="true" isFixed="true" context="IN" name="ContentType" displayName="Content_Type">
+                     <source type="LITERAL">application/json</source>
+                     <target type="HEADER">Content-Type</target>
+                  </map>
+                  <map isRequired="true" isFixed="true" context="IN" name="Accept" displayName="Accept">
+                     <source type="LITERAL">*/*</source>
+                     <target type="HEADER">Accept</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="false" style="URI_CONTEXT">
+                     <description>Specifies the object name</description>
+                  </parameter>
+                  <parameter name="id" isRequired="true" style="URI_CONTEXT">
+                     <description>Specifies the object id</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response code="200-599" name="stream" builderType="vnd.sag.cloudstreams+binary" messageFormatterType="vnd.sag.cloudstreams+binary"/>
+               </responses>
+            </resource>
+
+            <!-- Describes the sObject -->
+            <resource method="GET" path="/services/data/v60.0/sobjects/{SObjectName}/describe" name="describeSObject" displayName="Describe SObject" isHidden="false">
+               <description>Get field values for a standard object record</description>
+               <parameters>
+                  <parameter name="SObjectName" isRequired="true" style="URI_CONTEXT" />
+               </parameters>
+               <responses>
+                  <response name="describeSObjectResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:describeSObjectResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- Creates a record for an sObject -->
+            <resource method="POST" path="/services/data/v60.0/sobjects/{sObjectName}" name="create" displayName="create" type="COMPLEX">
+               <description>Creates a new record for the sObject</description>
+               <properties>
+                  <property name="fieldExpansionLevel" value="1" />
+               </properties>
+               <mappings>
+                  <map isRequired="true" isFixed="true" context="IN" name="entityName_mapping101 " displayName="entityName_mapping101">
+                     <source type="PARAMETER">core.businessObject</source>
+                     <target type="PARAMETER">sObjectName</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="true" style="URI_CONTEXT">
+                     <description>Specifies the object name</description>
+                  </parameter>
+               </parameters>
+               <request name="createRequest" builderType="application/octet+idataoref" messageFormatterType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:createRequest" excludeRoot="true" />
+               <responses>
+                  <response name="createResponse" code="201" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:createResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- retrieve -->
+            <resource method="GET" path="/services/data/v60.0/sobjects/{sObjectName}/{id}" name="retrieve" displayName="retrieve" type="COMPLEX">
+               <description>Retrieve field values from an object record</description>
+               <properties>
+                  <property name="fieldExpansionLevel" value="5" />
+               </properties>
+               <lookups>
+                  <lookup name="ids" ref="wmsalesforce.rest_v60.lookup:idLookup" type="optionsList">
+                     <args>
+                        <arg name="businessObject" type="IDATA">core.businessObject</arg>
+                     </args>
+                  </lookup>
+                  <lookup name="businessObjectList" ref="wmsalesforce.rest_v60.lookup:businessObjectList" type="boList"/>
+               </lookups>
+               <mappings>
+                  <map isRequired="true" isFixed="true" context="IN" name="sObjectName" displayName="sObjectName">
+                     <source type="PARAMETER">core.businessObject</source>
+                     <target type="PARAMETER">sObjectName</target>
+                  </map>
+                  <map context="IN" isRequired="true" isFixed="true" displayName="Id Lookup Mapping" name="id_lookup_mapping">
+                     <description>Look up for ids</description>
+                     <source type="LOOKUP">ids</source>
+                     <target type="PARAMETER">id</target>
+                  </map>
+                  <map isRequired="true" isFixed="true" context="IN" name="fields" displayName="fields">
+                     <source type="SERVICE">
+                        <service nsName="wmsalesforce.rest_v60.util.services:fieldsFormatter">
+                           <arg name="input">${core.objectFieldList}</arg>
+                        </service>
+                     </source>
+                     <target type="PARAMETER">fields</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="true" style="URI_CONTEXT">
+                     <description>Specifies object for which fields need to be retrieved</description>
+                  </parameter>
+                  <parameter name="id" isRequired="true" style="URI_CONTEXT">
+                     <description>Specifies the object to be retrieved</description>
+                  </parameter>
+                  <parameter name="fields" isRequired="true" isFixed="true" style="QUERYSTRING_PARAM">
+                     <description>Specifies the object to be retrieved</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="retrieveResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:retrieveResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- Get Deleted sObjects-->
+            <resource method="GET" path="/services/data/v60.0/sobjects/{sObjectType}/deleted" name="getDeleted" displayName="getDeleted" type="SIMPLE">
+               <description>Retrieves the list of individual records that have been deleted within the given timespan for the specified object</description>
+               <lookups>
+                  <lookup name="businessObjectList" ref="wmsalesforce.rest_v60.lookup:businessObjectList" type="boList"/>
+               </lookups>
+               <mappings>
+                  <map context="IN" isRequired="true" isFixed="true" displayName="Business Object Lookup Mapping" name="businessObject_mapping">
+                     <description>Look up for business object</description>
+                     <source type="LOOKUP">businessObjectList</source>
+                     <target type="PARAMETER">sObjectType</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectType" isRequired="true" style="URI_CONTEXT">
+                     <description>SObject for which deleted records needs to be retrieved</description>
+                  </parameter>
+                  <parameter name="start" isRequired="true" style="QUERYSTRING_PARAM">
+                     <description>Starting date and time to retrieve the data</description>
+                  </parameter>
+                  <parameter name="end" isRequired="true" style="QUERYSTRING_PARAM">
+                     <description>Ending date and time to retrieve the data</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="getDeletedResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:getDeletedResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- Get Updated sObjects -->
+            <resource method="GET" path="/services/data/v60.0/sobjects/{sObjectType}/updated" name="getUpdated" displayName="getUpdated" type="SIMPLE">
+               <description>Retrieves the list of individual records that have been updated (added or changed) within the given timespan for the specified object.</description>
+               <lookups>
+                  <lookup name="businessObjectList" ref="wmsalesforce.rest_v60.lookup:businessObjectList" type="boList"/>
+               </lookups>
+               <mappings>
+                  <map context="IN" isRequired="true" isFixed="true" displayName="Business Object Lookup Mapping" name="businessObject_mapping">
+                     <description>Look up for business object</description>
+                     <source type="LOOKUP">businessObjectList</source>
+                     <target type="PARAMETER">sObjectType</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectType" isRequired="true" style="URI_CONTEXT">
+                     <description>SObject for which updated records needs to be retrieved</description>
+                  </parameter>
+                  <parameter name="start" isRequired="true" style="QUERYSTRING_PARAM">
+                     <description>Starting date and time to retrieve the data</description>
+                  </parameter>
+                  <parameter name="end" isRequired="true" style="QUERYSTRING_PARAM">
+                     <description>Ending date and time to retrieve the data</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="getUpdatedResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:getUpdatedResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- query -->
+            <resource method="GET" path="/services/data/v60.0/query" name="query" displayName="query" type="COMPLEX">
+               <description>Create a query cursor</description>
+               <properties>
+                  <property name="allowFieldCustomization" value="true" />
+                  <property name="fieldExpansionLevel" value="5" />
+               </properties>
+               <mappings>
+                  <map isRequired="true" context="IN" name="batchSize" displayName="batchSize">
+                     <source type="LITERAL">batchSize=200</source>
+                     <target type="HEADER">Sforce-Query-Options</target>
+                  </map>
+                  <map context="IN" isRequired="true" isFixed="false" displayName="Query String" name="queryString">
+                     <description>Set the query string</description>
+                     <source type="SERVICE">
+                        <service nsName="wmsalesforce.rest_v60.util.services:queryFormatter">
+                           <hint>SELECT [${core.objectFieldList}] | [${select}] FROM ${core.businessObject} [[WHERE ${where}] [LIMIT ${limit}]] | [${filter}]</hint>
+                           <arg name="businessObject">${core.businessObject}</arg>
+                           <arg name="fieldList">${core.objectFieldList}</arg>
+                           <arg name="select">${select}</arg>
+                           <arg name="where">${where}</arg>
+                           <arg name="limit">${limit}</arg>
+                           <arg name="customFilter">${filter}</arg>
+                        </service>
+                     </source>
+                     <target type="PARAMETER">q</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="q" isRequired="true"  isFixed="true" style="QUERYSTRING_PARAM">
+                     <description>Specifies object for which fields need to be retrieved</description>
+                  </parameter>
+                  <parameter name="select" isRequired="false" style="REST">
+                     <description>Custom select field list with optional subquery</description>
+                  </parameter>
+                  <parameter name="where" isRequired="false" style="REST">
+                     <description>Where clause for query operation</description>
+                  </parameter>
+                  <parameter name="limit" isRequired="false" style="REST">
+                     <description>Limit parameter for query operation</description>
+                  </parameter>
+                  <parameter name="filter" isRequired="false" style="REST">
+                     <description>Custom filter condition. If specified overrides 'where' and 'limit' parameters</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="queryResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:queryResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- queryAll -->
+            <resource method="GET" path="/services/data/v60.0/queryAll" name="queryAll" displayName="queryAll" type="COMPLEX">
+               <description>Creates a query cursor, including deleted sObjects</description>
+               <properties>
+                  <property name="allowFieldCustomization" value="true" />
+                  <property name="fieldExpansionLevel" value="5" />
+               </properties>
+               <mappings>
+                  <map isRequired="true" context="IN" name="batchSize" displayName="batchSize">
+                     <source type="LITERAL">batchSize=200</source>
+                     <target type="HEADER">Sforce-Query-Options</target>
+                  </map>
+                  <map context="IN" isRequired="true" isFixed="true" displayName="Query String" name="queryString">
+                     <description>Set the query string</description>
+                     <source type="SERVICE">
+                        <service nsName="wmsalesforce.rest_v60.util.services:queryFormatter">
+                           <hint>SELECT [${core.objectFieldList}] | [${select}] FROM ${core.businessObject} [[WHERE ${where}] [LIMIT ${limit}]] | [${filter}]</hint>
+                           <arg name="businessObject">${core.businessObject}</arg>
+                           <arg name="fieldList">${core.objectFieldList}</arg>
+                           <arg name="select">${select}</arg>
+                           <arg name="where">${where}</arg>
+                           <arg name="limit">${limit}</arg>
+                           <arg name="customFilter">${filter}</arg>
+                        </service>
+                     </source>
+                     <target type="PARAMETER">q</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="q" isRequired="true" isFixed="true" style="QUERYSTRING_PARAM">
+                     <description>Specifies object for which fields need to be retrieved</description>
+                  </parameter>
+                  <parameter name="select" isRequired="false" style="REST">
+                     <description>custom select field list with optional subquery</description>
+                  </parameter>
+                  <parameter name="where" isRequired="false" style="REST">
+                     <description>where clause for query operation</description>
+                  </parameter>
+                  <parameter name="limit" isRequired="false" style="REST">
+                     <description>limit parameter for query operation</description>
+                  </parameter>
+                  <parameter name="filter" isRequired="false" style="REST">
+                     <description>custom filter condition. If specified overrides 'where' and 'limit' parameters</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="queryAllResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:queryAllResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- queryMore -->
+            <resource method="GET" path="/services/data/v60.0/query/{nextRecordId}" name="queryMore" displayName="queryMore" type="COMPLEX">
+               <description>Gets the next batch of sObjects from a query</description>
+               <properties>
+                  <property name="allowFieldCustomization" value="true" />
+                  <property name="fieldExpansionLevel" value="5" />
+               </properties>
+               <mappings>
+                  <map isRequired="true" context="IN" name="batchSize" displayName="batchSize">
+                     <source type="LITERAL">batchSize=200</source>
+                     <target type="HEADER">Sforce-Query-Options</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="nextRecordId" isRequired="true" style="URI_CONTEXT">
+                     <description>Specifies object for which fields need to be retrieved</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="queryMoreResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:queryMoreResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- Search -->
+            <resource method="GET" path="/services/data/v60.0/search" name="search" displayName="Search" type="SIMPLE">
+               <description>Executes the specified SOSL search</description>
+               <parameters>
+                  <parameter name="q" isRequired="true"  isFixed="false" style="QUERYSTRING_PARAM">
+                     <description>Specifies a SOSL statement</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="searchResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:searchResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- Delete sObject Record -->
+            <resource method="DELETE" path="/services/data/v60.0/sobjects/{sObjectName}/{id}" name="deleteObject" displayName="delete" type="SIMPLE">
+               <description>Deletes a sObject record</description>
+               <lookups>
+                  <lookup name="ids" ref="wmsalesforce.rest_v60.lookup:idLookupDelete" type="optionsList">
+                     <args>
+                        <arg name="businessObjectName" type="PARAMETER">businessObjectName</arg>
+                     </args>
+                  </lookup>
+                  <lookup name="businessObjectList" ref="wmsalesforce.rest_v60.lookup:businessObjectList" type="boList"/>
+               </lookups>
+               <mappings>
+                  <map context="IN" isRequired="true" isFixed="true" displayName="Id Lookup Mapping" name="id_lookup_mapping">
+                     <description>Look up for ids</description>
+                     <source type="LOOKUP">ids</source>
+                     <target type="PARAMETER">id</target>
+                  </map>
+                  <map context="IN" isRequired="true" isFixed="true" displayName="Business Object Lookup Mapping" name="businessObject_mapping">
+                     <description>Look up for business object</description>
+                     <source type="LOOKUP">businessObjectList</source>
+                     <target type="PARAMETER">sObjectName</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" style="URI_CONTEXT">
+                     <description>Specifies the sObject name</description>
+                  </parameter>
+                  <parameter name="id" isRequired="true" style="URI_CONTEXT">
+                     <description>Specifies the id of the sObject</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="deleteResponse" code="204" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:deleteResponse" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- update -->
+            <resource method="PATCH" path="/services/data/v60.0/sobjects/{sObjectName}/{id}" name="update" displayName="update" type="COMPLEX">
+               <description>Updates a sObject</description>
+               <properties>
+                  <property name="fieldExpansionLevel" value="1" />
+               </properties>
+               <mappings>
+                  <map isRequired="true" isFixed="true" context="IN" name="sObjectName" displayName="sObjectName">
+                     <source type="PARAMETER">core.businessObject</source>
+                     <target type="PARAMETER">sObjectName</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="true" style="URI_CONTEXT">
+                     <description>Sbject for which fields need to be updated</description>
+                  </parameter>
+                  <parameter name="id" isRequired="true" style="URI_CONTEXT">
+                     <description>Id of the specified object</description>
+                  </parameter>
+               </parameters>
+               <request name="updateRequest" messageFormatterType="application/json" builderType="application/octet+idataoref" documentRef="wmsalesforce.rest_v60.doctypes:updateRequest" excludeRoot="true" />
+               <responses>
+                  <response name="updateResponse" code="204" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:updateResponse" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- upsert -->
+            <resource method="PATCH" path="/services/data/v60.0/sobjects/{sObjectName}/{externalIDFieldName}/{externalIDFieldValue}" name="upsert" displayName="upsert" type="COMPLEX">
+               <description>Insert or Update (Upsert) a sObject using an external id</description>
+               <properties>
+                  <property name="allowFieldCustomization" value="true" />
+                  <property name="fieldExpansionLevel" value="1" />
+               </properties>
+               <mappings>
+                  <map isRequired="true" isFixed="true" context="IN" name="entityName_mapping" displayName="entityName_mapping">
+                     <source type="PARAMETER">core.businessObject</source>
+                     <target type="PARAMETER">sObjectName</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="true" style="URI_CONTEXT">
+                     <description>SObject for which fields need to be inserted or updated</description>
+                  </parameter>
+                  <parameter name="externalIDFieldName" isRequired="true" style="URI_CONTEXT" dataType="Record"
+                             documentRef="wmsalesforce.rest_v60.doctypes.parameter:externalIdFieldName">
+                     <description>ExternalId Field Name</description>
+                  </parameter>
+                  <parameter name="externalIDFieldValue" isRequired="true" style="URI_CONTEXT">
+                     <description>ExtenalId Field Value</description>
+                  </parameter>
+               </parameters>
+               <request name="upsertRequest" messageFormatterType="application/json" builderType="application/octet+idataoref" documentRef="wmsalesforce.rest_v60.doctypes:upsertRequest" excludeRoot="true" />
+               <responses>
+                  <response name="upsertResponse" code="200-204" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:upsertResponse" excludeRoot="true"/>
+                  <response name="matchingRecords" code="300-304" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:emptyResponse" dimension="1" excludeRoot="true"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- insertUsingIdAsExternalId -->
+            <resource method="POST" path="/services/data/v60.0/sobjects/{sObjectName}/Id" name="insertUsingIdAsExternalId" displayName="insertUsingIdAsExternalId" type="COMPLEX">
+               <description>Insert a sObject where the Id field is treated as the external ID</description>
+               <mappings>
+                  <map isRequired="true" isFixed="true" context="IN" name="entityName_mapping" displayName="entityName_mapping">
+                     <source type="PARAMETER">core.businessObject</source>
+                     <target type="PARAMETER">sObjectName</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="true" style="URI_CONTEXT">
+                     <description>SObject for which fields need to be inserted</description>
+                  </parameter>
+               </parameters>
+               <request name="insertUsingIdAsExternalIdRequest" messageFormatterType="application/json" builderType="application/octet+idataoref" documentRef="wmsalesforce.rest_v60.doctypes:insertUsingIdAsExternalIdRequest" excludeRoot="true" />
+               <responses>
+                  <response name="insertUsingIdAsExternalIdResponse" code="201" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:insertUsingIdAsExternalIdResponse" excludeRoot="true"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1"/>
+               </responses>
+            </resource>
+
+            <!-- createMultiple -->
+            <resource method="POST" path="/services/data/v60.0/composite/sobjects" name="createMultiple" displayName="createMultiple" type="DYNAMIC">
+               <description>Create multiple set of new sObjects</description>
+               <properties>
+                  <!--  includeRecordNumbers indicates if Record Number column to be included or not -->
+                  <property name="includeRecordNumbers" value="false"/>
+                  <!--  allowMutipleAbstractObjects allow multiple dynamic abstract objects -->
+                  <property name="allowMutipleAbstractObjects" value="false"/>
+                  <!--  allow multiple operations e.g. Create, Update, Delete -->
+                  <property name="allowMultipleInteractions" value="false"/>
+                  <!--  allow object collection e.g. Account[]-->
+                  <property name="allowObjectCollection" value="true"/>
+                  <!--  allow linking between two objects e.g. If 'Account' creation requires 'Contact' then these can be linked.-->
+                  <property name="allowObjectLink" value="false"/>
+                  <!-- if record number column is required then set recordPrefix value is required. -->
+                  <!--property name="recordPrefix" value="record"/-->
+                  <property name="allowDuplicate" value="true"/>
+                  <!-- Allow duplicate objects in a single call. -->
+               </properties>
+               <handler nsName="wm.cloudstreams.salesforce.rest.commonv1.multiple.CreateInteractionHandler" type="java">
+                  <references>
+                     <reference name="dObject" type="abstractObject" displayName="Business Object"/>
+                  </references>
+               </handler>
+               <request name="createMultiRequest" builderType="application/octet+idataoref" messageFormatterType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:createMultipleRequest" excludeRoot="false" />
+               <responses>
+                  <response name="createMultipleResponse" code="200-201" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:createMultipleResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- updateMultiple -->
+             <resource method="PATCH" path="/services/data/v60.0/composite/sobjects" name="updateMultiple" displayName="updateMultiple" type="DYNAMIC">
+               <description>Updates multiple set of new sObjects</description>
+               <properties> 
+                  <!--  includeRecordNumbers indicates if Record Number column to be included or not -->
+                   <property name="includeRecordNumbers" value="false"/> 
+                  <!--  allowMutipleAbstractObjects allow multiple dynamic abstract objects -->
+                   <property name="allowMutipleAbstractObjects" value="false"/> 
+                  <!--  allow multiple operations e.g. Create, Update, Delete -->
+                   <property name="allowMultipleInteractions" value="false"/> 
+                  <!--  allow object collection e.g. Account[]-->
+                   <property name="allowObjectCollection" value="true"/> 
+                  <!--  allow linking between two objects e.g. If 'Account' creation requires 'Contact' then these can be linked.-->
+                   <property name="allowObjectLink" value="false"/> 
+                  <!-- if record number column is required then set recordPrefix value is required. -->
+                  <property name="recordPrefix" value="record"/>
+                   <property name="allowDuplicate" value="true"/> 
+                  <!-- Allow duplicate objects in a single call. -->
+                </properties>
+               <handler nsName="wm.cloudstreams.salesforce.rest.commonv1.multiple.UpdateMultipleInteractionHandler" type="java">
+                  <references>
+                     <reference name="dObject" type="abstractObject" displayName="Business Object"/>
+                  </references>
+               </handler>
+               <request name="updateMultipleRequest" builderType="application/octet+idataoref" messageFormatterType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:updateMultipleRequest" excludeRoot="false" />
+               <responses>
+                  <response name="updateMultipleResponse" code="200-201" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:updateMultipleResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource> 
+
+            <!-- retrieveMultiple -->
+            <resource method="GET" path="/services/data/v60.0/composite/sobjects/{sObjectName}" name="retrieveMultiple" displayName="retrieveMultiple" type="COMPLEX">
+               <description>Retrieves one or more records of sObject</description>
+               <mappings>
+                  <map isRequired="true" isFixed="true" context="IN" name="sObjectName" displayName="sObjectName">
+                     <source type="PARAMETER">core.businessObject</source>
+                     <target type="PARAMETER">sObjectName</target>
+                  </map>
+                  <map isRequired="true" isFixed="true" context="IN" name="fields" displayName="fields">
+                     <source type="SERVICE">
+                        <service nsName="wmsalesforce.rest_v60.util.services:fieldsFormatter">
+                           <arg name="input">${core.objectFieldList}</arg>
+                        </service>
+                     </source>
+                     <target type="PARAMETER">fields</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="true" style="URI_CONTEXT">
+                     <description>Specifies object for which fields need to be retrieved</description>
+                  </parameter>
+                  <parameter name="ids" isRequired="true" isFixed="false" style="QUERYSTRING_PARAM">
+                     <description>Specifies the ids to be retrieved</description>
+                  </parameter>
+                  <parameter name="fields" isRequired="true" isFixed="true" style="QUERYSTRING_PARAM">
+                     <description>Specifies the fields to be retrieved</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="retrieveMultipleResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:retrieveMultipleResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- Delete Multiple -->
+            <resource method="DELETE" path="/services/data/v60.0/composite/sobjects" name="deleteMultiple" displayName="deleteMultiple" type="SIMPLE">
+               <description>Deletes one or more records of the sObject</description>
+               <parameters>
+                  <parameter name="ids" isRequired="true" isFixed="false" style="QUERYSTRING_PARAM">
+                     <description>Specifies the ids to be deleted</description>
+                  </parameter>
+                  <parameter name="allOrNone" isRequired="false" isFixed="false" style="QUERYSTRING_PARAM"  documentRef="wmsalesforce.rest_v60.doctypes.parameter:allOrNone" dataType="Record">
+                     <description>Indicates whether to roll back the entire request when an error occurs</description>
+                  </parameter>
+               </parameters>
+               <responses>
+                  <response name="deleteMultipleResponse" code="200" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60:deleteMultipleResponse" excludeRoot="true" dimension="1"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- upsertMultiple -->
+            <resource method="PATCH" path="/services/data/v60.0/composite/sobjects/{sObjectName}/{externalIDFieldName}" name="upsertMultiple" displayName="upsertMultiple" type="COMPLEX">
+               <description>Insert or Update (Upsert) multiple sObjects using an external id</description>
+               <mappings>
+                  <map isRequired="true" isFixed="true" context="IN" name="sObjectName" displayName="sObjectName">
+                     <source type="PARAMETER">core.businessObject</source>
+                     <target type="PARAMETER">sObjectName</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="true" style="URI_CONTEXT">
+                     <description>Specifies the object name</description>
+                  </parameter>
+                  <parameter name="externalIDFieldName" isRequired="true" style="URI_CONTEXT" dataType="String">
+                     <description>ExternalId Field Name</description>
+                  </parameter>
+               </parameters>
+
+               <handler nsName="wm.cloudstreams.salesforce.rest.commonv1.multiple.UpsertInteractionHandler" type="java">
+               </handler>
+               <request name="upsertMultipleRequest" messageFormatterType="application/json" builderType="application/octet+idataoref" documentRef="wmsalesforce.rest_v60.doctypes:upsertMultipleRequest" excludeRoot="false" />
+               <responses>
+                  <response name="upsertMultipleResponse" code="200-204" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:upsertMultipleResponse" excludeRoot="true" dimension="1"/>
+                  <response name="emptyResponse" code="300-304" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:emptyResponse" dimension="1"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- compositeRequest -->
+             <resource method="POST" path="/services/data/v60.0/composite" name="compositeRequest" displayName="compositeRequest" type="DYNAMIC">
+               <description>Executes series of REST API subrequests in a single call.</description>
+               <properties> 
+                  <!--  includeRecordNumbers indicates if Record Number column to be included or not -->
+                   <property name="includeRecordNumbers" value="true"/>
+                  <!--  allowMutipleAbstractObjects allow multiple dynamic abstract objects -->
+                  <property name="allowMutipleAbstractObjects" value="false"/> 
+                  <!--  allow multiple operations e.g. Create, Update, Delete -->
+                  <property name="allowMultipleInteractions" value="true"/> 
+                  <!--  allow object collection e.g. Account[]-->
+                  <property name="allowObjectCollection" value="true"/> 
+                  <!--  allow linking between two objects e.g. If 'Account' creation requires 'Contact' then these can be linked.-->
+                   <property name="allowObjectLink" value="false"/> 
+                  <!-- if record number column is required then set recordPrefix value is required. -->
+                  <property name="recordPrefix" value="record"/> 
+                  <property name="allowDuplicate" value="true"/> 
+                  <!-- Allow duplicate objects in a single call. -->
+              </properties>
+               <handler nsName="wm.cloudstreams.salesforce.rest.commonv1.composite.CompositeRequestHandler" type="java">
+                  <references>
+                     <reference name="dObject" type="abstractObject" displayName="Business Object"/>
+                  </references>
+               </handler>
+               <request name="compositeRequest" builderType="application/octet+idataoref" messageFormatterType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:compositeRequest" excludeRoot="false" />
+               <responses>
+                  <response name="compositeResponse" code="200-204" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:compositeResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="300-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource> 
+
+            <!-- Insert Blob Data -->
+            <resource method="POST" path="/services/data/v60.0/sobjects/{sObjectName}/" name="InsertBlobdata" displayName="Insert Blob Data">
+               <description>Inserts blob data for the records</description>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="false" style="URI_CONTEXT">
+                     <description>Specifies the sObject name</description>
+                  </parameter>
+               </parameters>
+               <request name="insertBlobDataRequest" messageFormatterType="multipart/form-data" builderType="application/octet+idataoref">
+                  <parts>
+                     <part name ="Body" contentType ="application/pdf" type="FILE" partRoot="fileRoot1" defaultValue="" isRequired="true"/>
+                  </parts>
+               </request>
+               <responses>
+                  <response name="insertBlobDataResponse" code="200-204" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:createResponse" excludeRoot="true"/>
+                  <response name="errorResponse" code="300-500" dimension="1" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" />
+               </responses>
+            </resource>
+
+            <!-- Update Blob Data -->
+            <resource method="PATCH" path="/services/data/v60.0/sobjects/{sObjectName}/{id}" name="updateBlobData" displayName="Update Blob Data">
+               <description>Updates blob data for the records</description>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="false" style="URI_CONTEXT">
+                     <description>Specifies the sObject name</description>
+                  </parameter>
+                  <parameter name="id" isRequired="true" isFixed="false" style="URI_CONTEXT">
+                     <description>Specifies the id of the object</description>
+                  </parameter>
+               </parameters>
+               <request name="updateBlobDataRequest" messageFormatterType="multipart/form-data" builderType="application/octet+idataoref">
+                  <parts>
+                     <part name ="Body" contentType ="application/pdf" type="FILE" partRoot="fileRoot1" defaultValue="" isRequired="true"/>
+                  </parts>
+               </request>
+               <responses>
+                  <response name="updateBlobDataResponse" code="204" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:updateResponse"/>
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource>
+
+            <!-- compositeBatch -->
+             <resource method="POST" path="/services/data/v60.0/composite/batch" name="compositeBatch" displayName="compositeBatch" type="DYNAMIC">
+               <description>Describes a collection of subrequests to execute with the Composite Batch resource.</description>
+               <properties> 
+                  <!--  includeRecordNumbers indicates if Record Number column to be included or not -->
+                 <property name="includeRecordNumbers" value="true"/> 
+                  <!--  allowMutipleAbstractObjects allow multiple dynamic abstract objects -->
+                   <property name="allowMutipleAbstractObjects" value="false"/> 
+                  <!--  allow multiple operations e.g. Create, Update, Delete -->
+                   <property name="allowMultipleInteractions" value="true"/> 
+                  <!--  allow object collection e.g. Account[]-->
+                   <property name="allowObjectCollection" value="true"/> 
+                  <!--  allow linking between two objects e.g. If 'Account' creation requires 'Contact' then these can be linked.-->
+                  <property name="allowObjectLink" value="false"/> 
+                  <!-- if record number column is required then set recordPrefix value is required. -->
+                  <property name="recordPrefix" value="record"/> 
+                  <property name="allowDuplicate" value="true"/> 
+                  <!-- Allow duplicate objects in a single call. -->
+               </properties>
+               <handler nsName="wm.cloudstreams.salesforce.rest.commonv1.composite.CompositeBatchRequestHandler" type="java">
+                  <references>
+                     <reference name="dObject_1" type="abstractObject" displayName="Business Object"/>
+                  </references>
+               </handler>
+               <request name="createMultiRequest" builderType="application/octet+idataoref" messageFormatterType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:createMultipleRequest" excludeRoot="false" />
+               <responses>
+                  <response name="createMultipleResponse" code="200-204" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:createMultipleResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="300-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource> 
+
+            <!-- sObject Tree -->
+            <resource method="POST" path="/services/data/v60.0/composite/tree/{sObjectName}" name="sObjectTree" displayName="sObject Tree" type="COMPLEX">
+               <description>Describes a collection of sObject trees to create with the sObject Tree resource.</description>
+               <properties>
+                  <property name="fieldExpansionLevel" value="5" />
+               </properties>
+               <mappings>
+                  <map isRequired="true" isFixed="true" context="IN" name="entityName_mapping101 " displayName="entityName_mapping101">
+                     <source type="PARAMETER">core.businessObject</source>
+                     <target type="PARAMETER">sObjectName</target>
+                  </map>
+               </mappings>
+               <parameters>
+                  <parameter name="sObjectName" isRequired="true" isFixed="true" style="URI_CONTEXT">
+                     <description>Specifies object for which fields need to be created</description>
+                  </parameter>
+               </parameters>
+               <handler nsName="wm.cloudstreams.salesforce.rest.commonv1.SObjectTreeRequestHandler" type="java">
+               </handler>
+               <request name="sObjectTreeRequest" builderType="application/octet+idataoref" messageFormatterType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:sObjectTreeRequest" excludeRoot="false" />
+               <responses>
+                  <response name="sObjectTreeResponse" code="201" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:sObjectTreeResponse" excludeRoot="true" />
+                  <response name="sObjectTreeErrorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:sObjectTreeErrorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource> 
+
+            <!-- Composite Graph -->
+            <resource method="POST" path="/services/data/v60.0/composite/graph" name="compositeGraph" displayName="compositeGraph" type="COMPLEX">
+               <description>Extends regular composite requests by assembling a complete series of related objects and records.</description>
+               <properties>
+                  <property name="allowFieldCustomization" value="true"/>
+               </properties>
+               <mappings/>
+               <request name="compositeGraphRequest" builderType="application/octet+idataoref" messageFormatterType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:compositeGraphRequest" excludeRoot="true" />
+               <responses>
+                  <response name="compositeGraphResponse" code="200-201" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:compositeGraphResponse" excludeRoot="true" />
+                  <response name="errorResponse" code="400-599" messageFormatterType="application/octet+idataoref" builderType="application/json" documentRef="wmsalesforce.rest_v60.doctypes:errorResponse" excludeRoot="true" dimension="1" />
+               </responses>
+            </resource> 
+         </resources>
+      </service>
+   </services>
+
+   <listeners>
+      <!-- HTTP LongPolling Comet - Salesforce usecase -->
+      <listener displayName="Salesforce Push Topic Event " name="SalesforcePushTopicEvent">
+         <description>Listens to incoming streaming notifications for changes to Salesforce data that match a SOQL query you define, in a secure and scalable way.</description>
+         <properties>
+            <!-- Event processing mode in a cluster  -->
+            <property name="event.clusterMode" value="multiNode" />
+         </properties>
+
+         <connections>
+            <connection displayName="Bayeux HTTP Long-Polling Connection" name="BayeuxHTTPLongPollingConnection" type="bayeux_http_long_polling">
+               <description>Streaming connection description</description>
+               <groups>
+                  <group name="httpParams" type="httpParams" displayName="HTTP Parameter Configuration">
+                     <fields>
+                        <field name="hp.endpoint" displayName="Streaming API Endpoint" defaultValue="https://{instance}.salesforce.com/cometd/60.0" />
+                     </fields>
+                  </group>
+                  <group type="bayeux" name="bayeux" displayName="Bayeux Configuration">
+                     <fields>
+                        <field name="bu.backoffIncrement" displayName="Backoff Increment" defaultValue="1000" />
+                        <field name="bu.maxBackoff" displayName="Max Backoff" defaultValue="30000" />
+                        <field name="bu.maxMessageSize" displayName="Max Message Size" defaultValue="1051576" />
+                     </fields>
+                  </group>
+                  <group type="custom" name="Bayeux Extension Configuration" displayName="Bayeux Extension Configuration">
+                     <description>Bayeux Extension Configuration</description>
+                     <fields>
+                        <field name="cx.replayOptions" displayName="Replay Options" defaultValue="NEW" allowedValues="NEW, ALL, LAST-RECEIVED, CUSTOM" />
+                        <field name="cx.customeService" displayName="Retrieve ReplayID Service" defaultValue="" />
+                        <field name="cx.specificReplayID" isRuntime="true" isHidden="true" displayName="Specify ReplayID" defaultValue="-1" />
+                     </fields>
+                  </group>
+                  <group name="errorHandler" type="errorHandler" displayName="Error Callback Configuration">
+                     <fields>
+                        <field name="eh.isEnabled" displayName="Enabled" defaultValue="true"/>
+                        <field name="eh.retryCount" displayName="Retry Count" defaultValue="3" />
+                        <field name="eh.errorHandlerServiceName" displayName="Error Handler Service Name" defaultValue="wmsalesforce.rest_v60.util.listener.services:listenerErrorHandler" />
+                        <field name="eh.callbackServiceName" displayName="Callback Service Name" defaultValue="wmsalesforce.rest_v60.util.listener.services:listenerCallBackService"/>
+                        <field name="eh.runAsUser" displayName="Run As User" defaultValue=""/>
+                     </fields>
+                  </group>
+               </groups>
+               <start>
+                  <resource type="ISSERVICE" method="GET" path="/" displayName="Salesforce Login resource" name="wm.cloudstreams.listener.metadata.connection:registerExtension">
+                     <description>Login resource</description>
+                     <mappings>
+                        <map context="IN" isRequired="true" displayName="Replay Extension name mapping" name="Replay Id name mapping">
+                           <description>Replay Extension parameter mapping</description>
+                           <source type="LITERAL">replayExt</source>
+                           <target type="XPATH">
+                              <xpath>extensionInput/name</xpath>
+                           </target>
+                        </map>
+                        <map context="IN" isRequired="true" displayName="Replay Extension parameter mapping" name="Replay Id param mapping">
+                           <description>Replay Extension parameter mapping</description>
+                           <source type="IDATA">cx.replayOptions</source>
+                           <target type="XPATH">
+                              <xpath>extensionInput/properties</xpath>
+                           </target>
+                        </map>
+                     </mappings>
+                  </resource>
+               </start>
+            </connection>
+         </connections>
+
+         <subscribers>
+
+            <!-- Subscriber Definitions -->
+            <subscriber displayName="Push Topic Subscriber" name="PushTopic Subscriber" path="/topic/{pushTopicName}">
+               <description>Listens to a single PushTopic channel</description>
+               <parameters>
+                  <parameter name="pushTopicName" isRequired="true" style="URI_CONTEXT" defaultValue="">
+                     <description>PushTopic name</description>
+                  </parameter>
+               </parameters>
+               <!--Document type shipped with the provider/connector, template for the document type instance generated along with the listener node -->
+               <event namespace="wmsalesforce.rest_v60.doctypes.listener:pushTopicEventResponse" type="document">
+                  <extractor source="json">
+                     <attributes>
+                        <attribute name="channel" path="/channel" id="true" />
+                        <attribute name="replayId" path="/data/event/replayId" id="true" />
+                     </attributes>
+                  </extractor>
+                  <preProcessors>
+                     <processor name="DuplicateChecker" />
+                  </preProcessors>
+               </event>
+            </subscriber>
+
+         </subscribers>
+      </listener>
+
+      <listener displayName="Salesforce Platform Event" name="SalesforcePlatformEvent">
+         <description>Listens to incoming platform event notifications for changes to Salesforce data that match a SOQL query you define, in a secure and scalable way.</description>
+         <properties>
+            <!-- Event processing mode in a cluster  -->
+            <property name="event.clusterMode" value="multiNode" />
+         </properties>
+
+         <connections>
+            <connection displayName="Bayeux HTTP Long-Polling Connection" name="BayeuxHTTPLongPollingConnection" type="bayeux_http_long_polling">
+               <description>Streaming connection description</description>
+               <groups>
+                  <group name="httpParams" type="httpParams" displayName="HTTP Parameter Configuration">
+                     <fields>
+                        <field name="hp.endpoint" displayName="Streaming API Endpoint" defaultValue="https://{instance}.salesforce.com/cometd/60.0" />
+                     </fields>
+                  </group>
+                  <group type="bayeux" name="bayeux" displayName="Bayeux Configuration">
+                     <fields>
+                        <field name="bu.handshakeRetry" displayName="Handshake Retry" defaultValue="5" />
+                        <field name="bu.handshakeRetryInterval" displayName="Handshake Retry Interval(ms)" defaultValue="10000" />
+                        <field name="bu.handshakeTimeout" displayName="Handshake Timeout(ms)" defaultValue="30000" />
+                     </fields>
+                  </group>
+                  <group type="custom" name="Bayeux Extension Configuration" displayName="Bayeux Extension Configuration">
+                     <description>Bayeux Extension Configuration</description>
+                     <fields>
+                        <field name="cx.replayOptions" displayName="Replay Options" defaultValue="NEW" allowedValues="NEW, ALL, LAST-RECEIVED, CUSTOM" />
+                        <field name="cx.customeService" displayName="Retrieve ReplayID Service" defaultValue="" />
+                        <field name="cx.specificReplayID" isRuntime="true" isHidden="true" displayName="Specify ReplayID" defaultValue="-1" />
+                     </fields>
+                  </group>
+                  <group name="errorHandler" type="errorHandler" displayName="Error Callback Configuration">
+
+                     <fields>
+                        <field name="eh.isEnabled" displayName="Enabled" defaultValue="true"/>
+                        <field name="eh.retryCount" displayName="Retry Count" defaultValue="3" />
+                        <field name="eh.errorHandlerServiceName" displayName="Error Handler Service Name" defaultValue="wmsalesforce.rest_v60.util.listener.services:listenerErrorHandler"/>
+                        <field name="eh.callbackServiceName" displayName="Callback Service Name" defaultValue="wmsalesforce.rest_v60.util.listener.services:listenerCallBackService"/>
+                        <field name="eh.runAsUser" displayName="Run As User" defaultValue=""/>
+                     </fields>
+                  </group>
+               </groups>
+               <start>
+                  <resource type="ISSERVICE" method="GET" path="/" displayName="Salesforce Login resource" name="wm.cloudstreams.listener.metadata.connection:registerExtension">
+                     <description>Login resource</description>
+                     <mappings>
+                        <map context="IN" isRequired="true" displayName="Replay Extension name mapping" name="Replay Id name mapping">
+                           <description>Replay Extension parameter mapping</description>
+                           <source type="LITERAL">replayExt</source>
+                           <target type="XPATH">
+                              <xpath>extensionInput/name</xpath>
+                           </target>
+                        </map>
+                        <map context="IN" isRequired="true" displayName="Replay Extension parameter mapping" name="Replay Id param mapping">
+                           <description>Replay Extension parameter mapping</description>
+                           <source type="IDATA">cx.replayOptions</source>
+                           <target type="XPATH">
+                              <xpath>extensionInput/properties</xpath>
+                           </target>
+                        </map>
+                     </mappings>
+                  </resource>
+               </start>
+            </connection>
+         </connections>
+
+         <subscribers>
+            <!-- Subscriber Definitions -->
+            <subscriber displayName="platform Event Subscriber" name="platformEventSubscriber" path="/event/{eventName}">
+               <description>Listens to platform Event</description>
+               <parameters>
+                  <parameter name="eventName" isRequired="true" style="URI_CONTEXT" defaultValue="">
+                     <description>Event name</description>
+                  </parameter>
+               </parameters>
+               <!--Document type shipped with the provider/connector, template for the document type instance generated along with the listener node -->
+               <event namespace="wmsalesforce.rest_v60.doctypes.listener:platformEventResponse" type="document">
+                  <extractor source="json">
+                     <attributes>
+                        <attribute name="channel" path="/channel" id="true" />
+                        <attribute name="replayId" path="/data/event/replayId" id="true" />
+                     </attributes>
+                  </extractor>
+                  <preProcessors>
+                     <processor name="DuplicateChecker" />
+                  </preProcessors>
+               </event>
+            </subscriber>
+
+         </subscribers>
+      </listener>
+
+      <listener displayName="Salesforce Change Data Capture Event" name="SalesforceCDCEvent">
+         <description>Change Data Capture publishes change events, which represent changes to Salesforce records.</description>
+         <properties>
+            <!-- Event processing mode in a cluster  -->
+            <property name="event.clusterMode" value="multiNode" />
+         </properties>
+         <connections>
+            <connection displayName="Bayeux HTTP Long-Polling Connection" name="BayeuxHTTPLongPollingConnection" type="bayeux_http_long_polling">
+               <description>Streaming connection description</description>
+               <groups>
+                  <group name="httpParams" type="httpParams" displayName="HTTP Parameter Configuration">
+                     <fields>
+                        <field name="hp.endpoint" displayName="Streaming API Endpoint" defaultValue="https://{instance}.salesforce.com/cometd/60.0" />
+                     </fields>
+                  </group>
+                  <group type="bayeux" name="bayeux" displayName="Bayeux Configuration">
+                     <fields>
+                        <field name="bu.handshakeRetry" displayName="Handshake Retry" defaultValue="5" />
+                        <field name="bu.handshakeRetryInterval" displayName="Handshake Retry Interval(ms)" defaultValue="10000" />
+                        <field name="bu.handshakeTimeout" displayName="Handshake Timeout(ms)" defaultValue="30000" />
+                     </fields>
+                  </group>
+                  <group type="custom" name="Bayeux Extension Configuration" displayName="Bayeux Extension Configuration">
+                     <description>Bayeux Extension Configuration</description>
+                     <fields>
+                        <field name="cx.replayOptions" displayName="Replay Options" defaultValue="NEW" allowedValues="NEW, ALL, LAST-RECEIVED, CUSTOM" />
+                        <field name="cx.customeService" displayName="Retrieve ReplayID Service" defaultValue="" />
+                        <field name="cx.specificReplayID" isRuntime="true" isHidden="true" displayName="Specify ReplayID" defaultValue="-1" />
+                     </fields>
+                  </group>
+                  <group name="errorHandler" type="errorHandler" displayName="Error Callback Configuration">
+                     <fields>
+                        <field name="eh.isEnabled" displayName="Enabled" defaultValue="true"/>
+                        <field name="eh.retryCount" displayName="Retry Count" defaultValue="3" />
+                        <field name="eh.errorHandlerServiceName" displayName="Error Handler Service Name" defaultValue="wmsalesforce.rest_v60.util.listener.services:listenerErrorHandler"/>
+                        <field name="eh.callbackServiceName" displayName="Callback Service Name" defaultValue="wmsalesforce.rest_v60.util.listener.services:listenerCallBackService"/>
+                        <field name="eh.runAsUser" displayName="Run As User" defaultValue=""/>
+                     </fields>
+                  </group>
+               </groups>
+               <start>
+                  <resource type="ISSERVICE" method="GET" path="/" displayName="Salesforce Login resource" name="wm.cloudstreams.listener.metadata.connection:registerExtension">
+                     <description>Login resource</description>
+                     <mappings>
+                        <map context="IN" isRequired="true" displayName="Replay Extension name mapping" name="Replay Id name mapping">
+                           <description>Replay Extension parameter mapping</description>
+                           <source type="LITERAL">replayExt</source>
+                           <target type="XPATH">
+                              <xpath>extensionInput/name</xpath>
+                           </target>
+                        </map>
+                        <map context="IN" isRequired="true" displayName="Replay Extension parameter mapping" name="Replay Id param mapping">
+                           <description>Replay Extension parameter mapping</description>
+                           <source type="IDATA">cx.replayOptions</source>
+                           <target type="XPATH">
+                              <xpath>extensionInput/properties</xpath>
+                           </target>
+                        </map>
+                     </mappings>
+                  </resource>
+               </start>
+            </connection>
+         </connections>
+         <subscribers>
+
+            <!-- Subscriber Definitions -->
+            <subscriber displayName="Change Data Capture Event Subscriber" name="ChangeDataCaptureEventSubscriber" path="/data/{ChangeEvents}">
+               <description>Listens to a Change Data Capture Event</description>
+               <parameters>
+                  <parameter name="ChangeEvents" isRequired="true" style="URI_CONTEXT" defaultValue="">
+                     <description>Provide ChangeEvent, ObjectNameChangeEvent or CustomObjectName__ChangeEvent</description>
+                  </parameter>
+               </parameters>
+               <!--Document type shipped with the provider/connector, template for the document type instance generated along with the listener node -->
+               <event namespace="wmsalesforce.rest_v60.doctypes.listener:cdcEventResponse" type="document">
+                  <extractor source="json">
+                     <attributes>
+                        <attribute name="channel" path="/channel" id="true" />
+                        <attribute name="replayId" path="/data/event/replayId" id="true" />
+                     </attributes>
+                  </extractor>
+                  <preProcessors>
+                     <processor name="DuplicateChecker" />
+                  </preProcessors>
+               </event>
+            </subscriber>
+         </subscribers>
+      </listener>
+      <listener displayName="Salesforce Generic Event" name="SalesforceGenericEvent">
+         <description>Use generic events to send custom notifications that are not tied to Salesforce data changes. Use generic streaming when you want to send and receive custom notifications.</description>
+         <properties>
+            <!-- Event processing mode in a cluster  -->
+            <property name="event.clusterMode" value="multiNode" />
+         </properties>
+         <connections>
+            <connection displayName="Bayeux HTTP Long-Polling Connection" name="BayeuxHTTPLongPollingConnection" type="bayeux_http_long_polling">
+               <description>Streaming connection description</description>
+               <groups>
+                  <group name="httpParams" type="httpParams" displayName="HTTP Parameter Configuration">
+                     <fields>
+                        <field name="hp.endpoint" displayName="Streaming API Endpoint" defaultValue="https://{instance}.salesforce.com/cometd/60.0" />
+                     </fields>
+                  </group>
+                  <group type="bayeux" name="bayeux" displayName="Bayeux Configuration">
+                     <fields>
+                        <field name="bu.handshakeRetry" displayName="Handshake Retry" defaultValue="5" />
+                        <field name="bu.handshakeRetryInterval" displayName="Handshake Retry Interval(ms)" defaultValue="10000" />
+                        <field name="bu.handshakeTimeout" displayName="Handshake Timeout(ms)" defaultValue="30000" />
+                     </fields>
+                  </group>
+                  <group type="custom" name="Bayeux Extension Configuration" displayName="Bayeux Extension Configuration">
+                     <description>Bayeux Extension Configuration</description>
+                     <fields>
+                        <field name="cx.replayOptions" displayName="Replay Options" defaultValue="NEW" allowedValues="NEW, ALL, LAST-RECEIVED, CUSTOM" />
+                        <field name="cx.customeService" displayName="Retrieve ReplayID Service" defaultValue="" />
+                        <field name="cx.specificReplayID" isRuntime="true" isHidden="true" displayName="Specify ReplayID" defaultValue="-1" />
+                     </fields>
+                  </group>
+                  <group name="errorHandler" type="errorHandler" displayName="Error Callback Configuration">
+                     <fields>
+                        <field name="eh.isEnabled" displayName="Enabled" defaultValue="true"/>
+                        <field name="eh.retryCount" displayName="Retry Count" defaultValue="3" />
+                        <field name="eh.errorHandlerServiceName" displayName="Error Handler Service Name" defaultValue="wmsalesforce.rest_v60.util.listener.services:listenerErrorHandler" />
+                        <field name="eh.callbackServiceName" displayName="Callback Service Name" defaultValue="wmsalesforce.rest_v60.util.listener.services:listenerCallBackService"/>
+                        <field name="eh.runAsUser" displayName="Run As User" defaultValue=""/>
+                     </fields>
+                  </group>
+               </groups>
+               <start>
+                  <resource type="ISSERVICE" method="GET" path="/" displayName="Salesforce Login resource" name="wm.cloudstreams.listener.metadata.connection:registerExtension">
+                     <description>Login resource</description>
+                     <mappings>
+                        <map context="IN" isRequired="true" displayName="Replay Extension name mapping" name="Replay Id name mapping">
+                           <description>Replay Extension parameter mapping</description>
+                           <source type="LITERAL">replayExt</source>
+                           <target type="XPATH">
+                              <xpath>extensionInput/name</xpath>
+                           </target>
+                        </map>
+                        <map context="IN" isRequired="true" displayName="Replay Extension parameter mapping" name="Replay Id param mapping">
+                           <description>Replay Extension parameter mapping</description>
+                           <source type="IDATA">cx.replayOptions</source>
+                           <target type="XPATH">
+                              <xpath>extensionInput/properties</xpath>
+                           </target>
+                        </map>
+                     </mappings>
+                  </resource>
+               </start>
+            </connection>
+         </connections>
+         <subscribers>
+            <!-- Subscriber Definitions -->
+            <subscriber displayName="Generic Event Subscriber" name="genericEventSubscriber" path="/u/notifications/{GenericStreamingChannel}">
+               <description>Listens to Generic Event</description>
+               <parameters>
+                  <parameter name="GenericStreamingChannel" isRequired="true" style="URI_CONTEXT" defaultValue="">
+                     <description>Provide GenericStreamingChannel</description>
+                  </parameter>
+               </parameters>
+               <!--Document type shipped with the provider/connector, template for the document type instance generated along with the listener node -->
+               <event namespace="wmsalesforce.rest_v60.doctypes.listener:genericEventResponse" type="document">
+                  <extractor source="json">
+                     <attributes>
+                        <attribute name="channel" path="/channel" id="true" />
+                        <attribute name="replayId" path="/data/event/replayId" id="true" />
+                     </attributes>
+                  </extractor>
+                  <preProcessors>
+                     <processor name="DuplicateChecker" />
+                  </preProcessors>
+               </event>
+            </subscriber>
+         </subscribers>
+      </listener>
+   </listeners>
+</rest-connector>
